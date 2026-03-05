@@ -24,10 +24,10 @@ close_project
 
 # check timing
 try {
-    set result [exec grep VIO ./results/timing.rpt]
-    set result "Timing FAILED!: ${result}"
+    set result [exec grep VIO ./results/timing.rpt];
+    set result "Timing FAILED!: ${result}";
 } on error {e} {
-    set result "    Timing Passed!"
+    set result "\n************  Timing Passed! ************\n";
 }
 puts ${result}
 
