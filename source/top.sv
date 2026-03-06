@@ -18,11 +18,11 @@ module top (
     logic clk;
     assign clk = clkin100;
 
-    logic[31:0] led_count = 0;
-    always_ff @(posedge clk) begin
-        led_count <= led_count + 1;
-        led <= led_count[31-:8];
-    end
+//    logic[31:0] led_count = 0;
+//    always_ff @(posedge clk) begin
+//        led_count <= led_count + 1;
+//        led <= led_count[31-:8];
+//    end
     
     logic[1:0]  spi_io_i;
     logic[1:0]  spi_io_o;
@@ -41,6 +41,8 @@ module top (
         //    
         .usb_uart_rxd       (usb_uart_rx),
         .usb_uart_txd       (usb_uart_tx),
+        //
+        .led_gpio_tri_o     (led),
         //
         .max_spi_io0_i      (spi_io_i[0]),
         .max_spi_io0_o      (spi_io_o[0]),

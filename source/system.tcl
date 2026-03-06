@@ -137,6 +137,7 @@ xilinx.com:ip:smartconnect:1.0\
 xilinx.com:ip:microblaze:11.0\
 xilinx.com:ip:mdm:3.2\
 xilinx.com:ip:proc_sys_reset:5.0\
+xilinx.com:ip:axi_gpio:2.0\
 xilinx.com:ip:lmb_v10:3.0\
 xilinx.com:ip:lmb_bram_if_cntlr:4.0\
 xilinx.com:ip:blk_mem_gen:8.4\
@@ -299,6 +300,8 @@ proc create_root_design { parentCell } {
 
   set max_spi [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:spi_rtl:1.0 max_spi ]
 
+  set led_gpio [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:gpio_rtl:1.0 led_gpio ]
+
 
   # Create ports
   set clkin100 [ create_bd_port -dir I -type clk -freq_hz 100000000 clkin100 ]
@@ -329,7 +332,7 @@ proc create_root_design { parentCell } {
   # Create instance: axi_smc, and set properties
   set axi_smc [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 axi_smc ]
   set_property -dict [list \
-    CONFIG.NUM_MI {3} \
+    CONFIG.NUM_MI {4} \
     CONFIG.NUM_SI {1} \
   ] $axi_smc
 
@@ -354,12 +357,22 @@ proc create_root_design { parentCell } {
   # Create instance: rst_clkin100_100M, and set properties
   set rst_clkin100_100M [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_clkin100_100M ]
 
+  # Create instance: axi_gpio_0, and set properties
+  set axi_gpio_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 axi_gpio_0 ]
+  set_property -dict [list \
+    CONFIG.C_ALL_OUTPUTS {1} \
+    CONFIG.C_GPIO_WIDTH {8} \
+  ] $axi_gpio_0
+
+
   # Create interface connections
+  connect_bd_intf_net -intf_net axi_gpio_0_GPIO [get_bd_intf_ports led_gpio] [get_bd_intf_pins axi_gpio_0/GPIO]
   connect_bd_intf_net -intf_net axi_intc_0_interrupt [get_bd_intf_pins axi_intc_0/interrupt] [get_bd_intf_pins microblaze_0/INTERRUPT]
   connect_bd_intf_net -intf_net axi_quad_spi_0_SPI_0 [get_bd_intf_ports max_spi] [get_bd_intf_pins axi_quad_spi_0/SPI_0]
   connect_bd_intf_net -intf_net axi_smc_M00_AXI [get_bd_intf_pins axi_smc/M00_AXI] [get_bd_intf_pins axi_uartlite_0/S_AXI]
   connect_bd_intf_net -intf_net axi_smc_M01_AXI [get_bd_intf_pins axi_smc/M01_AXI] [get_bd_intf_pins axi_intc_0/s_axi]
   connect_bd_intf_net -intf_net axi_smc_M02_AXI [get_bd_intf_pins axi_smc/M02_AXI] [get_bd_intf_pins axi_quad_spi_0/AXI_LITE]
+  connect_bd_intf_net -intf_net axi_smc_M03_AXI [get_bd_intf_pins axi_smc/M03_AXI] [get_bd_intf_pins axi_gpio_0/S_AXI]
   connect_bd_intf_net -intf_net axi_uartlite_0_UART [get_bd_intf_ports usb_uart] [get_bd_intf_pins axi_uartlite_0/UART]
   connect_bd_intf_net -intf_net microblaze_0_M_AXI_DP [get_bd_intf_pins microblaze_0/M_AXI_DP] [get_bd_intf_pins axi_smc/S00_AXI]
   connect_bd_intf_net -intf_net microblaze_0_debug [get_bd_intf_pins mdm_1/MBDEBUG_0] [get_bd_intf_pins microblaze_0/DEBUG]
@@ -383,7 +396,8 @@ proc create_root_design { parentCell } {
   [get_bd_pins axi_uartlite_0/s_axi_aclk] \
   [get_bd_pins axi_intc_0/s_axi_aclk] \
   [get_bd_pins axi_quad_spi_0/s_axi_aclk] \
-  [get_bd_pins axi_quad_spi_0/ext_spi_clk]
+  [get_bd_pins axi_quad_spi_0/ext_spi_clk] \
+  [get_bd_pins axi_gpio_0/s_axi_aclk]
   connect_bd_net -net rst_clkin100_100M_bus_struct_reset  [get_bd_pins rst_clkin100_100M/bus_struct_reset] \
   [get_bd_pins microblaze_0_local_memory/SYS_Rst]
   connect_bd_net -net rst_clkin100_100M_mb_reset  [get_bd_pins rst_clkin100_100M/mb_reset] \
@@ -393,9 +407,11 @@ proc create_root_design { parentCell } {
   [get_bd_pins axi_uartlite_0/s_axi_aresetn] \
   [get_bd_pins axi_smc/aresetn] \
   [get_bd_pins axi_intc_0/s_axi_aresetn] \
-  [get_bd_pins axi_quad_spi_0/s_axi_aresetn]
+  [get_bd_pins axi_quad_spi_0/s_axi_aresetn] \
+  [get_bd_pins axi_gpio_0/s_axi_aresetn]
 
   # Create address segments
+  assign_bd_address -offset 0x40000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs axi_gpio_0/S_AXI/Reg] -force
   assign_bd_address -offset 0x41200000 -range 0x00010000 -target_address_space [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs axi_intc_0/S_AXI/Reg] -force
   assign_bd_address -offset 0x44A00000 -range 0x00010000 -target_address_space [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs axi_quad_spi_0/AXI_LITE/Reg] -force
   assign_bd_address -offset 0x40600000 -range 0x00010000 -target_address_space [get_bd_addr_spaces microblaze_0/Data] [get_bd_addr_segs axi_uartlite_0/S_AXI/Reg] -force
