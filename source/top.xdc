@@ -28,3 +28,23 @@ set_property PACKAGE_PIN D10 [get_ports {usb_uart_txd}]
 
 set_property IOSTANDARD LVCMOS33    [get_ports rstn]
 set_property PACKAGE_PIN C2         [get_ports rstn]
+
+# max_spi_ssn[1:0], max_spi_miso, max_spi_mosi, and max_spi_sck.
+set_property IOSTANDARD LVCMOS33    [get_ports max_*]
+set_property PACKAGE_PIN B11        [get_ports max_spi_mosi] 
+set_property PACKAGE_PIN A11        [get_ports max_spi_miso] 
+set_property PACKAGE_PIN D12        [get_ports max_spi_sck]
+set_property PACKAGE_PIN G13        [get_ports max_spi_ss[0]] 
+set_property PACKAGE_PIN B18        [get_ports max_spi_ss[1]] 
+set_property PACKAGE_PIN D13        [get_ports max_intb]
+set_property PACKAGE_PIN K16        [get_ports max_cnvtb]
+
+
+#set_property PACKAGE_PIN G13        [get_ports ja1] ;# CS
+#set_property PACKAGE_PIN B11        [get_ports ja2] ;# mosi
+#set_property PACKAGE_PIN A11        [get_ports ja3] ;# miso
+#set_property PACKAGE_PIN D12        [get_ports ja4] ;# sclk
+#set_property PACKAGE_PIN D13        [get_ports ja7] ;# INTB
+#set_property PACKAGE_PIN B18        [get_ports ja8] ;# unused
+#set_property PACKAGE_PIN A18        [get_ports ja9] ;# unused
+#set_property PACKAGE_PIN K16        [get_ports ja10] ;# CNVTB
