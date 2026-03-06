@@ -11,7 +11,9 @@ set_property default_lib work [current_project]
 load_features ipintegrator
 tclapp::install ultrafast -quiet
 
-source ../source/led_ila.tcl
+#source ../source/led_ila.tcl
+
+source ../source/system.tcl
 
 read_verilog -sv ../source/top.sv
 
