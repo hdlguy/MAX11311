@@ -39,8 +39,8 @@ module top (
         .clkin100           (clk),
         .rstn               (rstn),
         //    
-        .usb_uart_rxd       (usb_uart_rx),
-        .usb_uart_txd       (usb_uart_tx),
+        .usb_uart_rxd       (usb_uart_rxd),
+        .usb_uart_txd       (usb_uart_txd),
         //
         .led_gpio_tri_o     (led),
         //
