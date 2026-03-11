@@ -1,10 +1,12 @@
 #include <stdlib.h>
 #include <stdint.h>
-#include "xil_printf.h"
 #include "xparameters.h"
 #include "xstatus.h"
 #include "xgpio_l.h"
 #include "sleep.h"
+
+#include "xspi.h"
+#include "xintc.h"
 
 int main()
 {
@@ -22,7 +24,6 @@ int main()
         gpio_ptr[XGPIO_DATA_OFFSET/4] = 0x00ff & whilecount;    
 
         // delay for about 1 second
-        //for(int i=0; i<10000000; i++); 
         usleep(1000000);
 
         whilecount++;

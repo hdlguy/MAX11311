@@ -34,7 +34,7 @@ module top (
     logic[1:0]  spi_ss_o;    
     logic       spi_ss_t;
     
-    system inst (
+    system system_i (
         //
         .clkin100           (clk),
         .rstn               (rstn),
@@ -65,13 +65,12 @@ module top (
     IOBUF spi_ss_iobuf1 (.I(spi_ss_o[1]), .IO(max_spi_ss[1]),  .O(spi_ss_i[1]), .T(spi_ss_t));    
     
     // debug
-    //led_ila ila_inst (.clk(clk), .probe0(led_count)); // 32
-    logic mosi_o, miso_i, sck_o;
-    logic[1:0] ss_o;
-    assign mosi_o = spi_io_o[0];
-    assign miso_i = spi_io_i[1];
-    assign sck_o = spi_sck_o;
-    assign ss_o = spi_ss_o;
-    spi_ila spi_ila_inst(.clk(clk), .probe0({mosi_o, miso_i, sck_o, ss_o[0], ss_o[1]})); //5
+    logic dbg_mosi, dbg_miso, dbg_sck;
+    logic[1:0] dbg_ss;
+    assign dbg_mosi = spi_io_i[0];
+    assign dbg_miso = spi_io_i[1];
+    assign dbg_sck  = spi_sck_i;
+    assign dbg_ss   = spi_ss_i;
+    spi_ila spi_ila_inst(.clk(clk), .probe0({dbg_mosi, dbg_miso, dbg_sck, dbg_ss})); //5
 
 endmodule
