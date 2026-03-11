@@ -12,6 +12,7 @@ load_features ipintegrator
 tclapp::install ultrafast -quiet
 
 #source ../source/led_ila.tcl
+source ../source/spi_ila.tcl
 
 source ../source/system.tcl
 

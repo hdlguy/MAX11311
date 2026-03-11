@@ -66,5 +66,12 @@ module top (
     
     // debug
     //led_ila ila_inst (.clk(clk), .probe0(led_count)); // 32
+    logic mosi_o, miso_i, sck_o;
+    logic[1:0] ss_o;
+    assign mosi_o = spi_io_o[0];
+    assign miso_i = spi_io_i[1];
+    assign sck_o = spi_sck_o;
+    assign ss_o = spi_ss_o;
+    spi_ila spi_ila_inst(.clk(clk), .probe0({mosi_o, miso_i, sck_o, ss_o[0], ss_o[1]})); //5
 
 endmodule
