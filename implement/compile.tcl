@@ -18,6 +18,7 @@ wait_on_run impl_1
 open_run impl_1
 report_timing_summary   -file   ./results/timing.rpt
 report_utilization      -file   ./results/utilization.rpt
+report_io               -file   ./results/io.rpt
 write_debug_probes      -force  ./results/top.ltx
 write_mem_info          -force  ./results/top.mmi
 
