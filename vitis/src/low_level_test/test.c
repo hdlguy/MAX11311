@@ -154,10 +154,15 @@ int XSpi_LowLevelExample(u32 BaseAddress)
 	}
 
 	
-	 // * Fill up the transmitter with data, assuming the receiver can hold the same amount of data.
-	while ((XSpi_ReadReg(BaseAddress, XSP_SR_OFFSET) & XSP_SR_TX_FULL_MASK) == 0) {
-		XSpi_WriteReg((BaseAddress), XSP_DTR_OFFSET, Buffer[NumBytesSent++]);
-	}
+	//  // * Fill up the transmitter with data, assuming the receiver can hold the same amount of data.
+	// while ((XSpi_ReadReg(BaseAddress, XSP_SR_OFFSET) & XSP_SR_TX_FULL_MASK) == 0) {
+	// 	XSpi_WriteReg((BaseAddress), XSP_DTR_OFFSET, Buffer[NumBytesSent++]);
+	// }
+
+	XSpi_WriteReg((BaseAddress), XSP_DTR_OFFSET, 0xfa);
+	XSpi_WriteReg((BaseAddress), XSP_DTR_OFFSET, 0xf3);
+	XSpi_WriteReg((BaseAddress), XSP_DTR_OFFSET, 0x55);
+	
 
 	// slave select	
 	XSpi_WriteReg(BaseAddress, XSP_SSR_OFFSET, 0xfffffffe);
@@ -178,8 +183,7 @@ int XSpi_LowLevelExample(u32 BaseAddress)
 	while (!(XSpi_ReadReg(BaseAddress, XSP_SR_OFFSET) & XSP_SR_TX_EMPTY_MASK));
 
 	/*
-	 * Transmitter is full, now receive the data just looped back until
-	 * the receiver is empty. */
+	 * now receive the data just looped back until the receiver is empty. */
 	while ((XSpi_ReadReg(BaseAddress, XSP_SR_OFFSET) & XSP_SR_RX_EMPTY_MASK) == 0) {
 		Buffer[NumBytesRcvd++] = XSpi_ReadReg((BaseAddress), XSP_DRR_OFFSET);
 	}
