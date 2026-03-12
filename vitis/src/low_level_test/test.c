@@ -74,7 +74,7 @@
 
 /************************** Function Prototypes *******************************/
 
-int XSpi_LowLevelExample(u32 BaseAddress);
+int XSpi_LowLevelExample(void); //(u32 BaseAddress);
 
 /************************** Variable Definitions ******************************/
 
@@ -162,65 +162,42 @@ uint16_t max11311_read(uint8_t dev, uint8_t regnum){
 * @note		None
 *
 *******************************************************************************/
-int main(void)
+// int main(void)
+// {
+// 	int Status;
+
+// 	/*
+// 	 * Run the example, specify the Base Address that is generated in
+// 	 * xparameters.h
+// 	 */
+// 	Status = XSpi_LowLevelExample();//(SPI_BASEADDR);
+// 	if (Status != XST_SUCCESS) {
+// 		xil_printf("Spi lowlevel Example Failed\r\n");
+// 		return XST_FAILURE;
+// 	}
+
+// 	xil_printf("Successfully ran Spi lowlevel Example\r\n");
+// 	return XST_SUCCESS;
+// }
+
+
+// int XSpi_LowLevelExample() //(u32 BaseAddress)
+int main()
 {
-	int Status;
-
-	/*
-	 * Run the example, specify the Base Address that is generated in
-	 * xparameters.h
-	 */
-	Status = XSpi_LowLevelExample(SPI_BASEADDR);
-	if (Status != XST_SUCCESS) {
-		xil_printf("Spi lowlevel Example Failed\r\n");
-		return XST_FAILURE;
-	}
-
-	xil_printf("Successfully ran Spi lowlevel Example\r\n");
-	return XST_SUCCESS;
-}
-
-/******************************************************************************/
-/**
-*
-* This function does a simple loopback test within an SPI device.
-*
-* @param	BaseAddress is the BaseAddress of the SPI device
-*
-* @return	XST_SUCCESS if successful, XST_FAILURE if unsuccessful
-*
-* @note		None
-*
-*******************************************************************************/
-int XSpi_LowLevelExample(u32 BaseAddress)
-{
+	u32 BaseAddress = SPI_BASEADDR;
 	u32 Control;
 	int NumBytesSent;
 	int NumBytesRcvd;
-	u32 Count;
+	int Nbuf = 16;
+	uint8_t wbuf[Nbuf], rbuf[Nbuf];
 
-	/*
-	 * Set up the device in loopback mode and enable master mode.
-	 */
+	// enable master mode.
 	Control = XSpi_ReadReg(BaseAddress, XSP_CR_OFFSET);
-	//Control |= (XSP_CR_LOOPBACK_MASK | XSP_CR_MASTER_MODE_MASK);	
 	Control |= XSP_CR_MASTER_MODE_MASK;
 	XSpi_WriteReg(BaseAddress, XSP_CR_OFFSET, Control);
 
 
-	/*
-	 * Initialize the buffer with some data.
-	 */
-	for (Count = 0; Count < BUFFER_SIZE; Count++) {
-		Buffer[Count] = Count;
-	}
-
-	
-	//  // * Fill up the transmitter with data, assuming the receiver can hold the same amount of data.
-	// while ((XSpi_ReadReg(BaseAddress, XSP_SR_OFFSET) & XSP_SR_TX_FULL_MASK) == 0) {
-	// 	XSpi_WriteReg((BaseAddress), XSP_DTR_OFFSET, Buffer[NumBytesSent++]);
-	// }
-
+	// send three bytes
 	XSpi_WriteReg((BaseAddress), XSP_DTR_OFFSET, 0xfa);
 	XSpi_WriteReg((BaseAddress), XSP_DTR_OFFSET, 0xf3);
 	XSpi_WriteReg((BaseAddress), XSP_DTR_OFFSET, 0x55);
@@ -230,32 +207,35 @@ int XSpi_LowLevelExample(u32 BaseAddress)
 	// slave select	
 	XSpi_WriteReg(BaseAddress, XSP_SSR_OFFSET, 0xfffffffe);
 
-	 // * Enable the device.
+
+	// Enable the device.
 	Control = XSpi_ReadReg(BaseAddress, XSP_CR_OFFSET);
 	Control |= XSP_CR_ENABLE_MASK;
 	Control &= ~XSP_CR_TRANS_INHIBIT_MASK;
 	XSpi_WriteReg(BaseAddress, XSP_CR_OFFSET, Control);
 
-	 // * Initialize the rx buffer with zeroes so that it can be used to receive data.
-	for (Count = 0; Count < BUFFER_SIZE; Count++) { Buffer[Count] = 0x0; }
 
-	/*
-	 * Wait for the transmit FIFO to transition to empty before checking
+	 // Initialize the rx buffer with zeroes so that it can be used to receive data.
+	for (int i = 0; i < Nbuf; i++) { rbuf[i] = 0x0; }
+
+	/* Wait for the transmit FIFO to transition to empty before checking
 	 * the receive FIFO, this prevents a fast processor from seeing the
 	 * receive FIFO as empty */
 	while (!(XSpi_ReadReg(BaseAddress, XSP_SR_OFFSET) & XSP_SR_TX_EMPTY_MASK));
 
-	/*
-	 * now receive the data just looped back until the receiver is empty. */
+
+	//now receive the data just looped back until the receiver is empty. */
 	while ((XSpi_ReadReg(BaseAddress, XSP_SR_OFFSET) & XSP_SR_RX_EMPTY_MASK) == 0) {
-		Buffer[NumBytesRcvd++] = XSpi_ReadReg((BaseAddress), XSP_DRR_OFFSET);
+		rbuf[NumBytesRcvd++] = XSpi_ReadReg((BaseAddress), XSP_DRR_OFFSET);
 	}
+
 
 	/* If no data was sent or the data that was sent was not received, then return an error */
 	if ((NumBytesSent != NumBytesRcvd) || (NumBytesSent == 0)) {
-		xil_printf("NumBytesRcvd = %d\n\r", NumBytesRcvd);
+		xil_printf("FAIL: NumBytesRcvd = %d\n\r", NumBytesRcvd);
 		return XST_FAILURE;
+	} else {
+		xil_printf("PASS: NumBytesRcvd = %d\n\r", NumBytesRcvd);
+		return XST_SUCCESS;
 	}
-
-	return XST_SUCCESS;
 }
