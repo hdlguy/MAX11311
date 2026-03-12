@@ -135,8 +135,8 @@ uint16_t max11311_read(uint8_t dev, uint8_t regnum){
 	wbuf[1] = 0;
 	wbuf[2] = 0;
 	
-xil_printf("wbuf[0:2] = %02x %02x %02x\n\r", wbuf[0], wbuf[1], wbuf[2]);
-xil_printf("%02x %02x\n\r", dev, regnum);
+// xil_printf("wbuf[0:2] = %02x %02x %02x\n\r", wbuf[0], wbuf[1], wbuf[2]);
+// xil_printf("%02x %02x\n\r", dev, regnum);
 	
 	XSpi_WriteReg((SPI_BASEADDR), XSP_DTR_OFFSET, wbuf[0]);
 	XSpi_WriteReg((SPI_BASEADDR), XSP_DTR_OFFSET, wbuf[1]);
@@ -175,6 +175,8 @@ xil_printf("%02x %02x\n\r", dev, regnum);
 // int XSpi_LowLevelExample() //(u32 BaseAddress)
 int main()
 {
+	xil_printf("low_level_test\n\r");
+	
 	u32 BaseAddress = SPI_BASEADDR;
 	u32 Control;
 	// int NumBytesSent;
@@ -187,10 +189,13 @@ int main()
 	Control |= XSP_CR_MASTER_MODE_MASK;
 	XSpi_WriteReg(BaseAddress, XSP_CR_OFFSET, Control);
 
+	// writes and reads
 	uint16_t rval;
-	for (int i=0; i<128; i++){
-		max11311_write(1, i, 0xf0f3);
-		rval = max11311_read(1, i);
+	for(;;){
+		for (int i=0; i<128; i++){
+			max11311_write(1, i, 0xf0f3);
+			rval = max11311_read(1, i);
+		}
 	}
 	
 	xil_printf("rval = 0x%04x\n\r", rval);
