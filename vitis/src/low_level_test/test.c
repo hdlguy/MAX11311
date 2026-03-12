@@ -141,7 +141,8 @@ int XSpi_LowLevelExample(u32 BaseAddress)
 	 * Set up the device in loopback mode and enable master mode.
 	 */
 	Control = XSpi_ReadReg(BaseAddress, XSP_CR_OFFSET);
-	Control |= (XSP_CR_LOOPBACK_MASK | XSP_CR_MASTER_MODE_MASK);
+	//Control |= (XSP_CR_LOOPBACK_MASK | XSP_CR_MASTER_MODE_MASK);	
+	Control |= XSP_CR_MASTER_MODE_MASK;
 	XSpi_WriteReg(BaseAddress, XSP_CR_OFFSET, Control);
 
 
@@ -158,6 +159,8 @@ int XSpi_LowLevelExample(u32 BaseAddress)
 		XSpi_WriteReg((BaseAddress), XSP_DTR_OFFSET, Buffer[NumBytesSent++]);
 	}
 
+	// slave select	
+	XSpi_WriteReg(BaseAddress, XSP_SSR_OFFSET, 0xfffffffe);
 
 	 // * Enable the device.
 	Control = XSpi_ReadReg(BaseAddress, XSP_CR_OFFSET);
