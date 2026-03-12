@@ -71,6 +71,6 @@ module top (
     assign dbg_miso = spi_io_i[1];
     assign dbg_sck  = spi_sck_i;
     assign dbg_ss   = spi_ss_i;
-    spi_ila spi_ila_inst(.clk(clk), .probe0({dbg_mosi, dbg_miso, dbg_sck, dbg_ss})); //5
+    spi_ila spi_ila_inst(.clk(clk), .probe0({dbg_mosi, dbg_miso, dbg_sck}), .probe1(dbg_ss)); //3,2
 
 endmodule
