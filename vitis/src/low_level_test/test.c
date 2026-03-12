@@ -89,10 +89,10 @@ int XSpi_LowLevelExample(u32 BaseAddress);
  */
 u16 Buffer[BUFFER_SIZE];
 
-max11311_write(uint8_t dev, uint8_t regnum, uint16_t val){
+void max11311_write(uint8_t dev, uint8_t regnum, uint16_t val){
 	uint8_t wbuf[3];
 	
-	wbuf[0] = (regnum<1) | (0x00);
+	wbuf[0] = (regnum<1) | (0x00); // write bit
 	wbuf[1] = (val>>8) & 0x00ff;
 	wbuf[2] = (val>>0) & 0x00ff;
 	
@@ -116,6 +116,39 @@ max11311_write(uint8_t dev, uint8_t regnum, uint16_t val){
 		Buffer[NumBytesRcvd++] = XSpi_ReadReg((SPI_BASEADDR), XSP_DRR_OFFSET);
 	}
 		
+}
+
+uint16_t max11311_read(uint8_t dev, uint8_t regnum){
+	uint8_t wbuf[16], rbuf[16];
+	
+	wbuf[0] = (regnum<1) | (0x01); // read bit
+	wbuf[1] = 0;
+	wbuf[2] = 0;
+	
+	XSpi_WriteReg((SPI_BASEADDR), XSP_DTR_OFFSET, wbuf[0]);
+	XSpi_WriteReg((SPI_BASEADDR), XSP_DTR_OFFSET, wbuf[1]);
+	XSpi_WriteReg((SPI_BASEADDR), XSP_DTR_OFFSET, wbuf[2]);
+		
+	XSpi_WriteReg(SPI_BASEADDR, XSP_SSR_OFFSET, 0xffffffff ^ (0x00000001<<dev));
+	
+	// * Enable the device.
+	uint32_t Control;
+	Control = XSpi_ReadReg(SPI_BASEADDR, XSP_CR_OFFSET);
+	Control |= XSP_CR_ENABLE_MASK;
+	Control &= ~XSP_CR_TRANS_INHIBIT_MASK;
+	XSpi_WriteReg(SPI_BASEADDR, XSP_CR_OFFSET, Control);
+
+	while (!(XSpi_ReadReg(SPI_BASEADDR, XSP_SR_OFFSET) & XSP_SR_TX_EMPTY_MASK));
+
+	int NumBytesRcvd = 0;
+	while ((XSpi_ReadReg(SPI_BASEADDR, XSP_SR_OFFSET) & XSP_SR_RX_EMPTY_MASK) == 0) {
+		rbuf[NumBytesRcvd++] = XSpi_ReadReg((SPI_BASEADDR), XSP_DRR_OFFSET);
+	}
+	
+	uint16_t retval;
+	retval = (((uint16_t)(rbuf[1])) << 8) | rbuf[0];
+	
+	return(retval);		
 }
 
 /******************************************************************************/
@@ -162,8 +195,8 @@ int main(void)
 int XSpi_LowLevelExample(u32 BaseAddress)
 {
 	u32 Control;
-	int NumBytesSent = 0;
-	int NumBytesRcvd = 0;
+	int NumBytesSent;
+	int NumBytesRcvd;
 	u32 Count;
 
 	/*
@@ -191,6 +224,7 @@ int XSpi_LowLevelExample(u32 BaseAddress)
 	XSpi_WriteReg((BaseAddress), XSP_DTR_OFFSET, 0xfa);
 	XSpi_WriteReg((BaseAddress), XSP_DTR_OFFSET, 0xf3);
 	XSpi_WriteReg((BaseAddress), XSP_DTR_OFFSET, 0x55);
+	NumBytesSent = 3;
 	
 
 	// slave select	
@@ -219,6 +253,7 @@ int XSpi_LowLevelExample(u32 BaseAddress)
 
 	/* If no data was sent or the data that was sent was not received, then return an error */
 	if ((NumBytesSent != NumBytesRcvd) || (NumBytesSent == 0)) {
+		xil_printf("NumBytesRcvd = %d\n\r", NumBytesRcvd);
 		return XST_FAILURE;
 	}
 
