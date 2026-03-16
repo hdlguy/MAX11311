@@ -10,12 +10,9 @@
 #define SPI_BASEADDR		XPAR_XSPI_0_BASEADDR
 #endif
 
-#define BUFFER_SIZE			 32
-
-u16 Buffer[BUFFER_SIZE];
 
 void max11311_write(uint8_t dev, uint8_t regnum, uint16_t val){
-	uint8_t wbuf[3];
+	uint8_t wbuf[3], rbuf[3];
 	
 	wbuf[0] = (regnum<<1) | (0x00); // write bit
 	wbuf[1] = (val>>8) & 0x00ff; // MSB
@@ -42,7 +39,7 @@ void max11311_write(uint8_t dev, uint8_t regnum, uint16_t val){
 
 	int NumBytesRcvd = 0;
 	while ((XSpi_ReadReg(SPI_BASEADDR, XSP_SR_OFFSET) & XSP_SR_RX_EMPTY_MASK) == 0) {
-		Buffer[NumBytesRcvd++] = XSpi_ReadReg((SPI_BASEADDR), XSP_DRR_OFFSET);
+		rbuf[NumBytesRcvd++] = XSpi_ReadReg((SPI_BASEADDR), XSP_DRR_OFFSET);
 	}
 
 	// disable the device.
@@ -137,7 +134,7 @@ int main()
 		xil_printf("MAX11311 Dev Control = 0x%04x\n\r", rval);
 
 		rval = max11311_read(0, 0x08);
-		temp = ((int)(rval*16))/16; // convert to signed and remove three lsb
+		temp = ((int)(rval*16))/16; // convert to signed
 		xil_printf("MAX11311 int temp = 0x%04x = %d.%dC\n\r", rval, temp/8, 125*(temp%8));
 		
 		usleep(1000000);
