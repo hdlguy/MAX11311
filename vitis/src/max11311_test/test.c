@@ -14,7 +14,7 @@
 
 int main()
 {
-	xil_printf("\n\rmax11311_test\n\r");
+	xil_printf("\n\r\n\rmax11311_test\n\r");
 	
 	u32 Control;
 
@@ -38,13 +38,13 @@ int main()
 	max11311_write(0, 0x26, 0x5100);
 	max11311_write(0, 0x27, 0x7100);
 	
-    // first we have to set the dac values for the gpo and gpi
-	max11311_write(0, 0x6b, 0x100);
-	max11311_write(0, 0x6c, 0x100);
-	max11311_write(0, 0x6d, 0x100);
-	max11311_write(0, 0x6e, 0x100);
-	max11311_write(0, 0x6f, 0x100);
-	max11311_write(0, 0x70, 0x100);
+    // first we have to set the dac values for the gpo and gpi, 0x500 makes the GPO = 3.3V.
+	max11311_write(0, 0x6b, 0x500);
+	max11311_write(0, 0x6c, 0x500);
+	max11311_write(0, 0x6d, 0x500);
+	max11311_write(0, 0x6e, 0x500);
+	max11311_write(0, 0x6f, 0x500);
+	max11311_write(0, 0x70, 0x500);
     usleep(1000);
 
 	// port[6:11] configuration, 0x3000=GPO, 0x1000=GPI, thresholds are set by DAC values
