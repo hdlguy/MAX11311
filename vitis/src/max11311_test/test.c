@@ -4,7 +4,10 @@
 #include "xil_printf.h"
 #include "sleep.h"
 #include "max11311.h"
-
+// This little program runs on the Microblaze and accesses the MAX11311 on the PMOD eval board.
+// It configures the part and then reads the ID and internal temperature once per second.
+// The ports are externally jumpered P0->P1, ... P10->P11. Ports 0,2,...10 are configured as DACs and 
+// P1, P3, ... P11 are configured as ADCs. The DACs are written incrementing values and the ADCs read back.
 
 int main()
 {
@@ -16,7 +19,6 @@ int main()
 	Control = XSpi_ReadReg(SPI_BASEADDR, XSP_CR_OFFSET);
 	Control |= XSP_CR_MASTER_MODE_MASK;
 	XSpi_WriteReg(SPI_BASEADDR, XSP_CR_OFFSET, Control);
-
 
 	// configure temperature monitors
 	max11311_write(0, 0x18, 0x0003);
@@ -43,7 +45,7 @@ int main()
 
 		
 	uint16_t rval, adcval[12], dacval[12];
-	int temp;
+	int16_t temp;
 	uint32_t whilecount=0;
 	for(;;){
 		
@@ -59,7 +61,7 @@ int main()
 
 		// read the internal temperature
 		rval = max11311_read(0, 0x08);
-		temp = ((int)(rval*16))/16; // convert to signed
+		temp = ((int16_t)(rval*16))/16; // convert to signed
 		xil_printf("MAX11311 int temp = 0x%04x = %d.%dC\n\r", rval, temp/8, 125*(temp%8));
 
 		// read and print the adc values
@@ -121,3 +123,4 @@ int main()
 	xil_printf("rval = 0x%04x\n\r", rval);
 
 }	
+
