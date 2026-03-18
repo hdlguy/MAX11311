@@ -7,7 +7,7 @@ import sys
 
 app_name = sys.argv[1]
 #app_name = "hello1"
-print("app_name = ", app_name)
+print("app_name = ", app_name, "\n")
 
 plat_name = "standalone_plat"
 hw_xsa = "../implement/results/top.xsa"

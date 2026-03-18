@@ -6,8 +6,11 @@
 #include "max11311.h"
 // This little program runs on the Microblaze and accesses the MAX11311 on the MAX11311PMB# Peripheral Module.
 // It configures the part and then periodically reads the ID and internal temperature.
-// The ports are externally jumpered P0->P1, ... P10->P11. Ports 0,2,...10 are configured as DACs and 
-// P1, P3, ... P11 are configured as ADCs. The DACs are written incrementing values and the ADCs read back.
+// The ports are externally jumpered P0->P1, ... P10->P11. 
+// Ports P0, P2, and P4 are configured as DACs. P1, P3, and P5 are configured as ADCs. 
+// Those DACs are written incrementing values and the ADCs read back.
+// Ports P6, P8, and P10 are configured as GPO. Ports P7, P9, and P11 are configured as GPI.
+// Incrementing values are written to those three GPO ports.
 
 int main()
 {
@@ -35,17 +38,28 @@ int main()
 	max11311_write(0, 0x26, 0x5100);
 	max11311_write(0, 0x27, 0x7100);
 	
-	// port[6:11] configuration
-	max11311_write(0, 0x2b, 0x5100);
-	max11311_write(0, 0x2c, 0x7100);
-	max11311_write(0, 0x2d, 0x5100);
-	max11311_write(0, 0x2e, 0x7100);
-	max11311_write(0, 0x2f, 0x5100);
-	max11311_write(0, 0x30, 0x7100);
+    // first we have to set the dac values for the gpo and gpi
+	max11311_write(0, 0x6b, 0x100);
+	max11311_write(0, 0x6c, 0x100);
+	max11311_write(0, 0x6d, 0x100);
+	max11311_write(0, 0x6e, 0x100);
+	max11311_write(0, 0x6f, 0x100);
+	max11311_write(0, 0x70, 0x100);
+    usleep(1000);
+
+	// port[6:11] configuration, 0x3000=GPO, 0x1000=GPI, thresholds are set by DAC values
+	max11311_write(0, 0x2b, 0x3100);
+	max11311_write(0, 0x2c, 0x1100);
+	max11311_write(0, 0x2d, 0x3100);
+	max11311_write(0, 0x2e, 0x1100);
+	max11311_write(0, 0x2f, 0x3100);
+	max11311_write(0, 0x30, 0x1100);
 
 		
+    // loop and print values
 	uint16_t rval, adcval[12], dacval[12], temp;
 	uint32_t whilecount=0;
+	uint16_t gpodat, gpidat;
 	for(;;){
 		
 		xil_printf("\n\rwhilecount = 0x%08x\n\r", whilecount);
@@ -79,9 +93,9 @@ int main()
 		adcval[11] = max11311_read(0, 0x50);
 
 		xil_printf("ADC: ");
-		for (int i=0; i<12; i++) { xil_printf("0x%04x ", adcval[i]);} xil_printf("\n\r");
+		for (int i=0; i<6; i++) { xil_printf("0x%04x ", adcval[i]);} xil_printf("\n\r");
 		
-		// write the DAC values
+		// write  DACs
 		for (int i=0; i<12; i++) { dacval[i] = (whilecount & 0x0fff); }
 		max11311_write(0, 0x62, dacval[0]);
 		max11311_write(0, 0x63, dacval[1]);
@@ -90,12 +104,12 @@ int main()
 		max11311_write(0, 0x66, dacval[4]);
 		max11311_write(0, 0x67, dacval[5]);		
 
-		max11311_write(0, 0x6b, dacval[6]);
-		max11311_write(0, 0x6c, dacval[7]);
-		max11311_write(0, 0x6d, dacval[8]);
-		max11311_write(0, 0x6e, dacval[9]);
-		max11311_write(0, 0x6f, dacval[10]);
-		max11311_write(0, 0x70, dacval[11]);
+		//max11311_write(0, 0x6b, dacval[6]);
+		//max11311_write(0, 0x6c, dacval[7]);
+		//max11311_write(0, 0x6d, dacval[8]);
+		//max11311_write(0, 0x6e, dacval[9]);
+		//max11311_write(0, 0x6f, dacval[10]);
+		//max11311_write(0, 0x70, dacval[11]);
 
 		// read back the DAC values and print
 		dacval[0] = max11311_read(0, 0x62);
@@ -114,6 +128,24 @@ int main()
 
 		xil_printf("DAC: ");
 		for (int i=0; i<12; i++) { xil_printf("0x%04x ", dacval[i]);} xil_printf("\n\r");
+
+		// write the GPO values
+		gpodat = 0;
+		gpodat |= ((whilecount>>0) & 0x01) << 11;
+		gpodat |= ((whilecount>>1) & 0x01) << 13;
+		gpodat |= ((whilecount>>2) & 0x01) << 15;
+		max11311_write(0, 0x0d, gpodat);		
+
+		// read the GPI values
+		rval = max11311_read(0, 0x0b);
+		gpidat = 0;
+		gpidat |= ((rval>>12) & 0x01) << 0;
+		gpidat |= ((rval>>14) & 0x01) << 1;
+		rval = max11311_read(0, 0x0c);
+		gpidat |= ((rval>>0) & 0x01) << 2;
+		xil_printf("GPO Data = 0x%04X,  GPI Data = 0x%04x", whilecount&0x07, gpidat);
+		
+		
 		
 		usleep(2000000);
 		whilecount++;
