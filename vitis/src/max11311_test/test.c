@@ -4,8 +4,8 @@
 #include "xil_printf.h"
 #include "sleep.h"
 #include "max11311.h"
-// This little program runs on the Microblaze and accesses the MAX11311 on the PMOD eval board.
-// It configures the part and then reads the ID and internal temperature once per second.
+// This little program runs on the Microblaze and accesses the MAX11311 on the MAX11311PMB# Peripheral Module.
+// It configures the part and then periodically reads the ID and internal temperature.
 // The ports are externally jumpered P0->P1, ... P10->P11. Ports 0,2,...10 are configured as DACs and 
 // P1, P3, ... P11 are configured as ADCs. The DACs are written incrementing values and the ADCs read back.
 
