@@ -12,7 +12,12 @@ module top (
     inout   logic           max_spi_sck,
     inout   logic[1:0]      max_spi_ss,  // two chip select lines for two devices.
     input   logic           max_intb,
-    output  logic           max_cnvtb
+    output  logic           max_cnvtb,
+    // PMOD SPI logic analyzer interface
+    output  logic           pmod_mosi,
+    output  logic           pmod_miso,
+    output  logic           pmod_sck,
+    output  logic[1:0]      pmod_ss
 );
 
     logic clk;
@@ -72,5 +77,10 @@ module top (
     assign dbg_sck  = spi_sck_i;
     assign dbg_ss   = spi_ss_i;
     spi_ila spi_ila_inst(.clk(clk), .probe0({dbg_mosi, dbg_miso, dbg_sck}), .probe1(dbg_ss)); //3,2
+    // these signals
+    assign pmod_mosi = dbg_mosi;
+    assign pmod_miso = dbg_miso;
+    assign pmod_sck  = dbg_sck;
+    assign pmod_ss   = dbg_ss;
 
 endmodule

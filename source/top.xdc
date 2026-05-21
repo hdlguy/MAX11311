@@ -41,7 +41,16 @@ set_property PACKAGE_PIN B18 [get_ports {max_spi_ss[1]}]
 set_property PACKAGE_PIN D13 [get_ports max_intb]
 set_property PACKAGE_PIN K16 [get_ports max_cnvtb]
 
+set_property IOSTANDARD LVCMOS33    [get_ports pmod_*]
+set_property SLEW SLOW              [get_ports pmod_*]
+set_property PACKAGE_PIN E15        [get_ports pmod_ss[0]] ;# jb1
+set_property PACKAGE_PIN E16        [get_ports pmod_mosi]  ;# jb2
+set_property PACKAGE_PIN D15        [get_ports pmod_miso]  ;# jb3
+set_property PACKAGE_PIN C15        [get_ports pmod_sck]   ;# jb4
+set_property PACKAGE_PIN J17        [get_ports pmod_ss[1]] ;# jb7
 
+
+## Pmod Header JA
 #set_property PACKAGE_PIN G13        [get_ports ja1] ;# CS
 #set_property PACKAGE_PIN B11        [get_ports ja2] ;# mosi
 #set_property PACKAGE_PIN A11        [get_ports ja3] ;# miso
@@ -50,4 +59,6 @@ set_property PACKAGE_PIN K16 [get_ports max_cnvtb]
 #set_property PACKAGE_PIN B18        [get_ports ja8] ;# unused
 #set_property PACKAGE_PIN A18        [get_ports ja9] ;# unused
 #set_property PACKAGE_PIN K16        [get_ports ja10] ;# CNVTB
+
+
 

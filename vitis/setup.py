@@ -1,5 +1,5 @@
 # vitis -s setup.py hello1
-# vitis --workspace ./workspace/
+# vitis -w workspace/
 
 import vitis
 import os
