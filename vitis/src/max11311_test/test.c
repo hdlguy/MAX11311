@@ -78,39 +78,6 @@ int main()
 		temp = ((int16_t)(rval*16))/16; // convert 12-bit signed word to 16-bit signed by doing an unsigned multiply 16 and then a signed divide by 16.
 		xil_printf("MAX11311 int temp = 0x%04x = %d.%dC\n\r", rval, temp/8, 125*(temp%8));
 
-		// read and print the adc values
-		adcval[0] = max11311_read(0, 0x42);
-		adcval[1] = max11311_read(0, 0x43);
-		adcval[2] = max11311_read(0, 0x44);
-		adcval[3] = max11311_read(0, 0x45);
-		adcval[4] = max11311_read(0, 0x46);
-		adcval[5] = max11311_read(0, 0x47);
-		
-		adcval[6] = max11311_read(0, 0x4b);
-		adcval[7] = max11311_read(0, 0x4c);
-		adcval[8] = max11311_read(0, 0x4d);
-		adcval[9] = max11311_read(0, 0x4e);
-		adcval[10] = max11311_read(0, 0x4f);
-		adcval[11] = max11311_read(0, 0x50);
-
-		xil_printf("ADC: ");
-		for (int i=0; i<6; i++) { xil_printf("0x%04x ", adcval[i]);} xil_printf("\n\r");
-		
-		// write  DACs
-		for (int i=0; i<12; i++) { dacval[i] = (whilecount & 0x0fff); }
-		max11311_write(0, 0x62, dacval[0]);
-		max11311_write(0, 0x63, dacval[1]);
-		max11311_write(0, 0x64, dacval[2]);
-		max11311_write(0, 0x65, dacval[3]);
-		max11311_write(0, 0x66, dacval[4]);
-		max11311_write(0, 0x67, dacval[5]);		
-
-		//max11311_write(0, 0x6b, dacval[6]);
-		//max11311_write(0, 0x6c, dacval[7]);
-		//max11311_write(0, 0x6d, dacval[8]);
-		//max11311_write(0, 0x6e, dacval[9]);
-		//max11311_write(0, 0x6f, dacval[10]);
-		//max11311_write(0, 0x70, dacval[11]);
 
 		// read back the DAC values and print
 		dacval[0] = max11311_read(0, 0x62);
@@ -127,8 +94,61 @@ int main()
 		dacval[10] = max11311_read(0, 0x6f);
 		dacval[11] = max11311_read(0, 0x70);
 
-		xil_printf("DAC: ");
-		for (int i=0; i<6; i++) { xil_printf("0x%04x ", dacval[i]);} xil_printf("\n\r");
+		xil_printf("DAC[0,2,4] = ");
+		for (int i=0; i<6; i+=2) { xil_printf("0x%04x ", dacval[i]);} xil_printf("\n\r");
+
+
+		// read and print the adc values
+		adcval[0] = max11311_read(0, 0x42);
+		adcval[1] = max11311_read(0, 0x43);
+		adcval[2] = max11311_read(0, 0x44);
+		adcval[3] = max11311_read(0, 0x45);
+		adcval[4] = max11311_read(0, 0x46);
+		adcval[5] = max11311_read(0, 0x47);
+		
+		adcval[6] = max11311_read(0, 0x4b);
+		adcval[7] = max11311_read(0, 0x4c);
+		adcval[8] = max11311_read(0, 0x4d);
+		adcval[9] = max11311_read(0, 0x4e);
+		adcval[10] = max11311_read(0, 0x4f);
+		adcval[11] = max11311_read(0, 0x50);
+
+		xil_printf("ADC[1,3,5] = ");
+		for (int i=1; i<6; i+=2) { xil_printf("0x%04x ", adcval[i]);} xil_printf("\n\r");
+		
+		// write new DAC values
+		for (int i=0; i<12; i++) { dacval[i] = (whilecount & 0x0fff); }
+		max11311_write(0, 0x62, dacval[0]);
+		max11311_write(0, 0x63, dacval[1]);
+		max11311_write(0, 0x64, dacval[2]);
+		max11311_write(0, 0x65, dacval[3]);
+		max11311_write(0, 0x66, dacval[4]);
+		max11311_write(0, 0x67, dacval[5]);		
+
+		//max11311_write(0, 0x6b, dacval[6]);
+		//max11311_write(0, 0x6c, dacval[7]);
+		//max11311_write(0, 0x6d, dacval[8]);
+		//max11311_write(0, 0x6e, dacval[9]);
+		//max11311_write(0, 0x6f, dacval[10]);
+		//max11311_write(0, 0x70, dacval[11]);
+
+		// // read back the DAC values and print
+		// dacval[0] = max11311_read(0, 0x62);
+		// dacval[1] = max11311_read(0, 0x63);
+		// dacval[2] = max11311_read(0, 0x64);
+		// dacval[3] = max11311_read(0, 0x65);
+		// dacval[4] = max11311_read(0, 0x66);
+		// dacval[5] = max11311_read(0, 0x67);
+		
+		// dacval[6] = max11311_read(0, 0x6b);
+		// dacval[7] = max11311_read(0, 0x6c);
+		// dacval[8] = max11311_read(0, 0x6d);
+		// dacval[9] = max11311_read(0, 0x6e);
+		// dacval[10] = max11311_read(0, 0x6f);
+		// dacval[11] = max11311_read(0, 0x70);
+
+		// xil_printf("DAC[0,2,4] = ");
+		// for (int i=0; i<6; i+=2) { xil_printf("0x%04x ", dacval[i]);} xil_printf("\n\r");
 
 		// write the GPO values
 		gpodat = 0;
