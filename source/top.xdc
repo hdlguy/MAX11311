@@ -29,6 +29,7 @@ set_property PACKAGE_PIN D10 [get_ports usb_uart_txd]
 set_property IOSTANDARD LVCMOS33 [get_ports rstn]
 set_property PACKAGE_PIN C2 [get_ports rstn]
 
+# These are the signals to the MAX11311 PMOD board on JA.
 # max_spi_ssn[1:0], max_spi_miso, max_spi_mosi, and max_spi_sck.
 set_property IOSTANDARD LVCMOS33    [get_ports max_*]
 set_property SLEW SLOW              [get_ports max_spi_*]
@@ -41,6 +42,7 @@ set_property PACKAGE_PIN B18 [get_ports {max_spi_ss[1]}]
 set_property PACKAGE_PIN D13 [get_ports max_intb]
 set_property PACKAGE_PIN K16 [get_ports max_cnvtb]
 
+# These are just signal copied to PMOD JB to observe with the Digilent Discovery 3.
 set_property IOSTANDARD LVCMOS33    [get_ports pmod_*]
 set_property SLEW SLOW              [get_ports pmod_*]
 set_property PACKAGE_PIN E15        [get_ports pmod_ss[0]] ;# jb1

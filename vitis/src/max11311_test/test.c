@@ -4,6 +4,7 @@
 #include "xil_printf.h"
 #include "sleep.h"
 #include "max11311.h"
+#include "fpga.h"
 // This little program runs on the Microblaze and accesses the MAX11311 on the MAX11311PMB# Peripheral Module.
 // It configures the part and then periodically reads the ID and internal temperature.
 // The ports are externally jumpered P0->P1, ... P10->P11. 
@@ -66,11 +67,11 @@ int main()
 		
 		// read the device ID
 		rval = max11311_read(0, 0x00);
-		xil_printf("MAX11311 ID = 0x%04x\n\r", rval);
+		xil_printf("MAX11311 ID = 0x%04x, should be 0x0424\n\r", rval);
 		
 		// read back Device Control
 		rval = max11311_read(0, 0x10);
-		xil_printf("MAX11311 Dev Control = 0x%04x\n\r", rval);
+		xil_printf("MAX11311 Dev Control = 0x%04x, should be 0x0143\n\r", rval);
 
 		// read the internal temperature
 		rval = max11311_read(0, 0x08);
@@ -127,7 +128,7 @@ int main()
 		dacval[11] = max11311_read(0, 0x70);
 
 		xil_printf("DAC: ");
-		for (int i=0; i<12; i++) { xil_printf("0x%04x ", dacval[i]);} xil_printf("\n\r");
+		for (int i=0; i<6; i++) { xil_printf("0x%04x ", dacval[i]);} xil_printf("\n\r");
 
 		// write the GPO values
 		gpodat = 0;
@@ -143,7 +144,7 @@ int main()
 		gpidat |= ((rval>>14) & 0x01) << 1;
 		rval = max11311_read(0, 0x0c);
 		gpidat |= ((rval>>0) & 0x01) << 2;
-		xil_printf("GPO Data = 0x%04X,  GPI Data = 0x%04x", whilecount&0x07, gpidat);
+		xil_printf("GPO Data = 0x%04X,  GPI Data = 0x%04x\n\r", whilecount&0x07, gpidat);
 		
 		
 		
