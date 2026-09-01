@@ -58,9 +58,10 @@ int main()
 
 		
     // loop and print values
-	uint16_t rval, adcval[12], dacval[12], temp;
+	uint16_t rval, temp;
 	uint32_t whilecount=0;
-	uint16_t gpodat, gpidat;
+	// uint16_t adcval[12], dacval[12];
+	// uint16_t gpodat, gpidat;
 	for(;;){
 		
 		xil_printf("\n\rwhilecount = 0x%08x\n\r", whilecount);
@@ -78,7 +79,7 @@ int main()
 		temp = ((int16_t)(rval*16))/16; // convert 12-bit signed word to 16-bit signed by doing an unsigned multiply 16 and then a signed divide by 16.
 		xil_printf("MAX11311 int temp = 0x%04x = %d.%dC\n\r", rval, temp/8, 125*(temp%8));
 
-
+/*
 		// read back the DAC values and print
 		dacval[0] = max11311_read(0, 0x62);
 		dacval[1] = max11311_read(0, 0x63);
@@ -125,31 +126,6 @@ int main()
 		max11311_write(0, 0x66, dacval[4]);
 		max11311_write(0, 0x67, dacval[5]);		
 
-		//max11311_write(0, 0x6b, dacval[6]);
-		//max11311_write(0, 0x6c, dacval[7]);
-		//max11311_write(0, 0x6d, dacval[8]);
-		//max11311_write(0, 0x6e, dacval[9]);
-		//max11311_write(0, 0x6f, dacval[10]);
-		//max11311_write(0, 0x70, dacval[11]);
-
-		// // read back the DAC values and print
-		// dacval[0] = max11311_read(0, 0x62);
-		// dacval[1] = max11311_read(0, 0x63);
-		// dacval[2] = max11311_read(0, 0x64);
-		// dacval[3] = max11311_read(0, 0x65);
-		// dacval[4] = max11311_read(0, 0x66);
-		// dacval[5] = max11311_read(0, 0x67);
-		
-		// dacval[6] = max11311_read(0, 0x6b);
-		// dacval[7] = max11311_read(0, 0x6c);
-		// dacval[8] = max11311_read(0, 0x6d);
-		// dacval[9] = max11311_read(0, 0x6e);
-		// dacval[10] = max11311_read(0, 0x6f);
-		// dacval[11] = max11311_read(0, 0x70);
-
-		// xil_printf("DAC[0,2,4] = ");
-		// for (int i=0; i<6; i+=2) { xil_printf("0x%04x ", dacval[i]);} xil_printf("\n\r");
-
 		// write the GPO values
 		gpodat = 0;
 		gpodat |= ((whilecount>>0) & 0x01) << 11;
@@ -165,7 +141,7 @@ int main()
 		rval = max11311_read(0, 0x0c);
 		gpidat |= ((rval>>0) & 0x01) << 2;
 		xil_printf("GPO Data = 0x%04X,  GPI Data = 0x%04x\n\r", whilecount&0x07, gpidat);
-		
+*/		
 		
 		
 		usleep(2000000);
