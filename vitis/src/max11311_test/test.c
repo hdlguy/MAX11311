@@ -60,8 +60,8 @@ int main()
     // loop and print values
 	uint16_t rval, temp;
 	uint32_t whilecount=0;
-	// uint16_t adcval[12], dacval[12];
-	// uint16_t gpodat, gpidat;
+	int16_t adcval[12], dacval[12];
+	uint16_t gpodat, gpidat;
 	for(;;){
 		
 		xil_printf("\n\rwhilecount = 0x%08x\n\r", whilecount);
@@ -79,7 +79,7 @@ int main()
 		temp = ((int16_t)(rval*16))/16; // convert 12-bit signed word to 16-bit signed by doing an unsigned multiply 16 and then a signed divide by 16.
 		xil_printf("MAX11311 int temp = 0x%04x = %d.%dC\n\r", rval, temp/8, 125*(temp%8));
 
-/*
+
 		// read back the DAC values and print
 		dacval[0] = max11311_read(0, 0x62);
 		dacval[1] = max11311_read(0, 0x63);
@@ -141,7 +141,7 @@ int main()
 		rval = max11311_read(0, 0x0c);
 		gpidat |= ((rval>>0) & 0x01) << 2;
 		xil_printf("GPO Data = 0x%04X,  GPI Data = 0x%04x\n\r", whilecount&0x07, gpidat);
-*/		
+		
 		
 		
 		usleep(2000000);
